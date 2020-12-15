@@ -51,7 +51,7 @@ public class LocalUnbound implements DNS {
 				executor.schedule(purge, seconds, TimeUnit.SECONDS);
 				generateFile();
 				
-				System.out.println("Schedule purge in " + seconds);
+				System.out.println("Next purge in " + seconds + " seconds");
 				return null;
 			}
 		};
@@ -120,6 +120,7 @@ public class LocalUnbound implements DNS {
 		
 		for (String host: todelete) {
 			actualLeases.remove(host);
+			System.out.println("Remove " + host + " from DNS service");
 			updated = true;
 		}
 	
@@ -140,8 +141,10 @@ public class LocalUnbound implements DNS {
 			if (old != null && old.end.isAfter(lease.end))
 				throw new RuntimeException("Unexpected lease purged newer one");
 			
-			if (old == null || !(old.ipv4.equals(lease.ipv4)))
+			if (old == null || !(old.ipv4.equals(lease.ipv4))) {
 				updated = true;
+				System.out.println("New/updated IPv4 address " + lease.ipv4 + " for " + lease.hostname);
+			}
 		}
 		
 		generateFile();
